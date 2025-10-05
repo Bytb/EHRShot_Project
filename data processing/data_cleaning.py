@@ -56,8 +56,8 @@ active_provider_ids = dex["provider_id"].dropna().unique()
 prov_active = prov[prov["provider_id"].isin(active_provider_ids)].reset_index(drop=True)
 
 # ---------- SAVE ----------
-prov_active.to_csv(OUT_DIR / "providers_clean.csv", index=False)
-dex.to_csv(OUT_DIR / "drug_exposure_clean_keep_refills.csv", index=False)
+prov_active.to_csv(OUT_DIR / "providers.csv", index=False)
+dex.to_csv(DATA_DIR / "drug_semiprocessed.csv", index=False)
 
 # ---------- SUMMARIES ----------
 print("[SUMMARY] Providers (clean, active):", len(prov_active))
