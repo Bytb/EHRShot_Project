@@ -32,7 +32,7 @@ SPECIALTIES = ["S1", "S2", "S3"]
 PROVIDERS_PER_SPEC = 8
 DRUGS = ["D1", "D2", "D3", "D4"]
 OVERPRESCRIBER = "P_S2_4"      # highlight node
-PPR_ALPHA = 0.70               # for later when you run PPR on this graph
+PPR_ALPHA = 0.70               # for later when you run ppr on this graph
 
 SPEC_COLORS = {
     "S1": "#4169E1",  # royal blue
@@ -141,7 +141,7 @@ def draw_graph(G, pos):
     fig, ax = plt.subplots(figsize=(11, 9))
     ax.set_title(
         "Toy Provider–Drug Bipartite Graph (Synthetic)\n"
-        "D1/D2 cross-specialty, D3→S1, D4→S3; α(PPR)=0.70",
+        "D1/D2 cross-specialty, D3→S1, D4→S3; α(ppr)=0.70",
         fontsize=12, pad=12
     )
 
