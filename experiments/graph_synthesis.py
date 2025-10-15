@@ -134,7 +134,7 @@ plt.hist(drug_deg, bins=30, alpha=0.7, label="Drugs")
 plt.yscale("log")
 plt.xlabel("Weighted degree (sum of exposures)")
 plt.ylabel("Count (log scale)")
-plt.title("Degree Distribution (Providers vs Drugs)")
+plt.title("Weighted Degree Distribution (Providers vs Drugs)")
 plt.legend()
 plt.tight_layout()
 deg_path = OUTPUT_DIR / "degree_distribution.png"
@@ -155,6 +155,63 @@ wt_path = OUTPUT_DIR / "weight_distribution.png"
 plt.savefig(wt_path, dpi=300)
 print(f"[INFO] Saved weight distribution → {wt_path}")
 plt.close()
+
+# -------------------------------------------------
+# 5b) Unweighted degree distributions (overlapped)
+# -------------------------------------------------
+print("\n[INFO] Plotting UNWEIGHTED degree distributions (providers vs drugs)...")
+
+# Unweighted degrees
+providers_nodes = [n for n, d in G.nodes(data=True) if d.get("ntype") == "provider"]
+drugs_nodes     = [n for n, d in G.nodes(data=True) if d.get("ntype") == "drug"]
+
+prov_deg_unw = [G.degree(n) for n in providers_nodes]
+drug_deg_unw = [G.degree(n) for n in drugs_nodes]
+
+# Overlapped histogram (same style as weighted)
+plt.figure(figsize=(7.5, 5.5))
+plt.hist(prov_deg_unw, bins=40, alpha=0.7, label="Providers")
+plt.hist(drug_deg_unw, bins=40, alpha=0.7, label="Drugs")
+plt.yscale("log")
+plt.xlabel("Unweighted degree (# distinct neighbors)")
+plt.ylabel("Count (log scale)")
+plt.title("Unweighted Degree Distribution (Providers vs Drugs)")
+plt.legend()
+plt.tight_layout()
+deg_unw_path = OUTPUT_DIR / "degree_distribution_unweighted.png"
+plt.savefig(deg_unw_path, dpi=300)
+print(f"[INFO] Saved unweighted degree distribution → {deg_unw_path}")
+plt.close()
+
+# CSV exports for reproducibility
+prov_deg_map = dict(G.degree(providers_nodes))
+drug_deg_map = dict(G.degree(drugs_nodes))
+
+pd.DataFrame(
+    {"provider_id": list(prov_deg_map.keys()), "degree": list(prov_deg_map.values())}
+).to_csv(OUTPUT_DIR / "provider_unweighted_degree.csv", index=False)
+
+pd.DataFrame(
+    {"drug_concept_id": list(drug_deg_map.keys()), "degree": list(drug_deg_map.values())}
+).to_csv(OUTPUT_DIR / "drug_unweighted_degree.csv", index=False)
+
+# Quick summary stats
+def _summ_stats(arr):
+    arr = np.asarray(arr, dtype=float)
+    return dict(mean=float(np.mean(arr)),
+                median=float(np.median(arr)),
+                p90=float(np.percentile(arr, 90)),
+                max=int(np.max(arr)))
+
+prov_stats = _summ_stats(prov_deg_unw) if len(prov_deg_unw) else {}
+drug_stats = _summ_stats(drug_deg_unw) if len(drug_deg_unw) else {}
+
+print("[STATS] Unweighted degree — Providers:",
+      f"mean={prov_stats.get('mean'):,.2f}, median={prov_stats.get('median'):,.1f}, "
+      f"p90={prov_stats.get('p90'):,.1f}, max={prov_stats.get('max')}")
+print("[STATS] Unweighted degree — Drugs:",
+      f"mean={drug_stats.get('mean'):,.2f}, median={drug_stats.get('median'):,.1f}, "
+      f"p90={drug_stats.get('p90'):,.1f}, max={drug_stats.get('max')}")
 
 # -------------------------------------------------
 # 6) Random mini sample and save

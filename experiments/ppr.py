@@ -124,6 +124,13 @@ def select_top1_per_specialty(provider_exposures: Dict, provider_specialty: Dict
     df_sorted = df.sort_values(["specialty", "exposures"], ascending=[True, False])
     top_rows = df_sorted.groupby("specialty", as_index=False).head(1)
 
+    # --- Print summary of top prescriber per specialty ---
+    print("\n[Top Prescriber per Specialty]")
+    print(f"{'provider_id':<12} {'exposures':<12} {'specialty'}")
+    for _, row in top_rows.iterrows():
+        print(f"{int(row['provider']):<12} {row['exposures']:<12.0f} {row['specialty']}")
+
+
     # Build specialty -> provider_id map
     return {str(row["specialty"]): row["provider"] for _, row in top_rows.iterrows()}
 
